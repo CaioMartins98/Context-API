@@ -1,5 +1,7 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useReducer, useRef } from 'react';
 import P from 'prop-types';
+import { reducer } from './reducer';
+import { buildActions } from './build-actions';
 
 export const initialState = {
   count: 0,
@@ -9,8 +11,9 @@ export const initialState = {
 const Context = createContext();
 
 export const CountContextProvider = ({ children }) => {
-  const [state, dispatch] = useState(initialState);
-  return <Context.Provider value={[state, dispatch]}>{children}</Context.Provider>;
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const actions = useRef(buildActions(dispatch));
+  return <Context.Provider value={[state, actions.current]}>{children}</Context.Provider>;
 };
 
 CountContextProvider.propTypes = {
